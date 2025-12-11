@@ -1,0 +1,164 @@
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ tshark -r tcp-wireshark-trace1-1.pcapng -Y 'http.request.method == "POST"' -T fields -e frame.number -e frame.time_epoch -e ip.src -e tcp.srcport -e ip.dst -e tcp.dstport -E header=y -E separator=" | "
+ frame.number frame.time_epoch ip.src tcp.srcport ip.dst tcp.dstport
+153 1612320206.840557000 192.168.86.68 55639 128.119.245.12 80
+@williamudo ➜ /workspaces/Wireshark_VM (main) $  tshark -r tcp-wireshark-trace1-1.pcapng -c 1
+    1   0.000000 192.168.86.68 → 128.119.245.12 TCP 78 55639 → 80 [SYN] Seq=0 Win=65535 Len=0 MSS=1460 WS=64 TSval=725607509 TSecr=0 SACK_PERM
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ tshark -r tcp-wireshark-trace1-1.pcapng -Y 'tcp contains "POST"' -T fields -e frame.number -e ip.src -e tcp.srcport -e ip.dst -e tcp.dstport -E header=y -E separator=" | "
+frame.number ip.src tcp.srcport ip.dst tcp.dstport
+4 192.168.86.68 55639 128.119.245.12 80
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ tshark -r tcp-wireshark-trace1-1.pcapng -Y 'tcp.flags.syn==1 && tcp.flags.ack==0' -T fields -e frame.number -e frame.time_epoch -e ip.src -e tcp.srcport -e tcp.seq -E header=y -E separator=" | "
+frame.number frame.time_epoch ip.src tcp.srcport tcp.seq
+1 1612320206.692875000 192.168.86.68 55639 0
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ tshark -r tcp-wireshark-trace1-1.pcapng -Y 'tcp.flags.syn==1 && tcp.flags.ack==1' -T fields -e frame.number -e frame.time_epoch -e ip.src -e tcp.srcport -e tcp.seq -e tcp.ack -E header=y -E separator=" | "
+frame.number frame.time_epoch ip.src tcp.srcport tcp.seq tcp.ack
+2 1612320206.715289000 128.119.245.12 80 0 1
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ tshark -r tcp-wireshark-trace1-1.pcapng -Y 'tcp.flags.syn==1 && tcp.flags.ack==0' \
+  -T fields -e frame.number -e frame.time_epoch -e ip.src -e tcp.srcport -e tcp.seq -E header=y -E separator=" | "
+frame.number frame.time_epoch ip.src tcp.srcport tcp.seq
+1 1612320206.692875000 192.168.86.68 55639 0
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ tshark -r tcp-wireshark-trace1-1.pcapng -Y 'tcp.flags.syn==1 && tcp.flags.ack==1' \
+  -T fields -e frame.number -e frame.time_epoch -e ip.src -e tcp.srcport -e tcp.seq -e tcp.ack -E header=y -E separator=" | "
+frame.number frame.time_epoch ip.src tcp.srcport tcp.seq tcp.ack
+2 1612320206.715289000 128.119.245.12 80 0 1
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ ^C
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ ^C
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ tshark -r tcp-wireshark-trace1-1.pcapng -Y 'frame.number == 4' -T fields -e frame.number -e frame.time_epoch -e ip.src -e tcp.srcport -e tcp.seq -e tcp.len -e frame.len -E header=y -E separator=" | "
+frame.number frame.time_epoch ip.src tcp.srcport tcp.seq tcp.len frame.len
+4 1612320206.716922000 192.168.86.68 55639 1 1448 1514
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ ^C
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ tshark -r tcp-wireshark-trace1-1.pcapng -Y 'http.request.method == "POST"' -T fields -e frame.number -e ip.src -e tcp.seq -e http.request.method -e http.content_length -E header=y -E separator=" | "
+frame.number ip.src tcp.seq http.request.method http.content_length
+153 192.168.86.68 152041 POST 152359
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ ^C
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ tshark -r tcp-wireshark-trace1-1.pcapng -Y 'tcp contains "POST"' -T fields -e frame.number -e tcp.stream -e ip.src -e tcp.seq -E header=y -E separator=" | "
+frame.number tcp.stream ip.src tcp.seq
+4 0 192.168.86.68 1
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ # replace STREAM with the number returned above
+tshark -r tcp-wireshark-trace1-1.pcapng -q -z "follow,tcp,raw,STREAM" > stream_STREAM.raw
+wc -c stream_STREAM.raw
+tshark: follow - Invalid address.
+0 stream_STREAM.raw
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ tshark -r tcp-wireshark-trace1-1.pcapng -Y "ip.src == 128.119.245.12 && tcp.ack >= 1449" \
+  -T fields -e frame.number -e frame.time_epoch -e ip.src -e tcp.ack -E header=y -E separator=" | " | head -n 5
+frame.number frame.time_epoch ip.src tcp.ack
+7 1612320206.745546000 128.119.245.12 1449
+8 1612320206.745551000 128.119.245.12 2897
+13 1612320206.746501000 128.119.245.12 4345
+16 1612320206.773643000 128.119.245.12 5793
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ tshark -r tcp-wireshark-trace1-1.pcapng \
+  -Y "ip.src==192.168.86.68 && tcp.len > 0" \
+  -T fields -e frame.number -e frame.len -e tcp.len -E header=y -E separator=" | " | head -n 4
+frame.number frame.len tcp.len
+4 1514 1448
+5 1514 1448
+6 1514 1448
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ tshark -r tcp-wireshark-trace1-1.pcapng \
+  -Y "ip.src==192.168.86.68 && tcp.len > 0" \
+  -T fields -e frame.number -e frame.len -e tcp.len | sed -n '1,4p'
+4       1514    1448
+5       1514    1448
+6       1514    1448
+9       1514    1448
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ tshark -r tcp-wireshark-trace1-1.pcapng -T fields -e tcp.window_size_value | sort -n | uniq -c | sed -n '1,20p'
+      1 249
+      1 272
+      1 295
+      1 317
+      1 340
+      1 362
+      1 385
+      1 408
+      1 430
+      1 453
+      1 476
+      1 521
+      1 566
+      1 589
+      1 611
+      1 634
+      1 679
+      1 702
+      1 724
+      1 747
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ tshark -r tcp-wireshark-trace1-1.pcapng -T fields -e tcp.window_size_value | awk 'BEGIN{min=-1} /^[0-9]/{if(min<0||$1+0<min)min=$1} END{print min}'
+249
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ tshark -r tcp-wireshark-trace1-1.pcapng -Y 'tcp.window_size_value == 0' -T fields -e frame.number -e frame.time_epoch -e ip.src -e tcp.window_size_value -E separator=" | "
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ sudo apt update
+sudo apt install tshark -y
+pip install pyshark matplotlib numpy
+Hit:1 https://dl.yarnpkg.com/debian stable InRelease
+Hit:2 https://repo.anaconda.com/pkgs/misc/debrepo/conda stable InRelease                                                                           
+Hit:3 https://packages.microsoft.com/repos/microsoft-ubuntu-noble-prod noble InRelease                                                             
+Hit:4 http://security.ubuntu.com/ubuntu noble-security InRelease    
+Hit:5 http://archive.ubuntu.com/ubuntu noble InRelease
+Hit:6 http://archive.ubuntu.com/ubuntu noble-updates InRelease
+Hit:7 http://archive.ubuntu.com/ubuntu noble-backports InRelease
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+45 packages can be upgraded. Run 'apt list --upgradable' to see them.
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+tshark is already the newest version (4.2.2-1.1build3).
+0 upgraded, 0 newly installed, 0 to remove and 45 not upgraded.
+Collecting pyshark
+  Downloading pyshark-0.6-py3-none-any.whl.metadata (806 bytes)
+Requirement already satisfied: matplotlib in /home/codespace/.local/lib/python3.12/site-packages (3.10.7)
+Requirement already satisfied: numpy in /home/codespace/.local/lib/python3.12/site-packages (2.3.4)
+Collecting lxml (from pyshark)
+  Downloading lxml-6.0.2-cp312-cp312-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl.metadata (3.6 kB)
+Collecting termcolor (from pyshark)
+  Downloading termcolor-3.2.0-py3-none-any.whl.metadata (6.4 kB)
+Requirement already satisfied: packaging in /home/codespace/.local/lib/python3.12/site-packages (from pyshark) (25.0)
+Collecting appdirs (from pyshark)
+  Downloading appdirs-1.4.4-py2.py3-none-any.whl.metadata (9.0 kB)
+Requirement already satisfied: contourpy>=1.0.1 in /home/codespace/.local/lib/python3.12/site-packages (from matplotlib) (1.3.3)
+Requirement already satisfied: cycler>=0.10 in /home/codespace/.local/lib/python3.12/site-packages (from matplotlib) (0.12.1)
+Requirement already satisfied: fonttools>=4.22.0 in /home/codespace/.local/lib/python3.12/site-packages (from matplotlib) (4.60.1)
+Requirement already satisfied: kiwisolver>=1.3.1 in /home/codespace/.local/lib/python3.12/site-packages (from matplotlib) (1.4.9)
+Requirement already satisfied: pillow>=8 in /home/codespace/.local/lib/python3.12/site-packages (from matplotlib) (12.0.0)
+Requirement already satisfied: pyparsing>=3 in /home/codespace/.local/lib/python3.12/site-packages (from matplotlib) (3.2.5)
+Requirement already satisfied: python-dateutil>=2.7 in /home/codespace/.local/lib/python3.12/site-packages (from matplotlib) (2.9.0.post0)
+Requirement already satisfied: six>=1.5 in /home/codespace/.local/lib/python3.12/site-packages (from python-dateutil>=2.7->matplotlib) (1.17.0)
+Downloading pyshark-0.6-py3-none-any.whl (41 kB)
+Downloading appdirs-1.4.4-py2.py3-none-any.whl (9.6 kB)
+Downloading lxml-6.0.2-cp312-cp312-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl (5.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.3/5.3 MB 33.2 MB/s  0:00:00
+Downloading termcolor-3.2.0-py3-none-any.whl (7.7 kB)
+Installing collected packages: appdirs, termcolor, lxml, pyshark
+Successfully installed appdirs-1.4.4 lxml-6.0.2 pyshark-0.6 termcolor-3.2.0
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ python stevens_plot.py
+Traceback (most recent call last):
+  File "/workspaces/Wireshark_VM/stevens_plot.py", line 6, in <module>
+    cap = pyshark.FileCapture(pcap, display_filter="tcp && ip.src==128.119.*")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/pyshark/capture/file_capture.py", line 47, in __init__
+    raise FileNotFoundError(f"[Errno 2] No such file or directory: {self.input_filepath}")
+FileNotFoundError: [Errno 2] No such file or directory: tcp-wireshark-trace1-1.pcap
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ python stevens_plot.py
+Traceback (most recent call last):
+  File "/workspaces/Wireshark_VM/stevens_plot.py", line 6, in <module>
+    cap = pyshark.FileCapture(pcapng, display_filter="tcp && ip.src==128.119.*")
+                              ^^^^^^
+NameError: name 'pcapng' is not defined. Did you mean: 'pcap'?
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ python stevens_plot.py
+Saved: stevens_graph.png
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ git add .
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ git commit -m "Wireshark HW - V1"
+[main 7e98556] Wireshark HW - V1
+ 4 files changed, 57 insertions(+)
+ create mode 100644 stevens_graph.png
+ create mode 100644 stevens_plot.py
+ create mode 100644 stream_STREAM.raw
+ create mode 100644 tcp-wireshark-trace1-1.pcapng
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ git push
+Enumerating objects: 7, done.
+Counting objects: 100% (7/7), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (5/5), done.
+Writing objects: 100% (6/6), 77.57 KiB | 5.17 MiB/s, done.
+Total 6 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+To https://github.com/williamudo/Wireshark_VM
+   d0bd0c1..7e98556  main -> main
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ touch terminal_log.txt
