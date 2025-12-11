@@ -161,4 +161,25 @@ Writing objects: 100% (6/6), 77.57 KiB | 5.17 MiB/s, done.
 Total 6 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
 To https://github.com/williamudo/Wireshark_VM
    d0bd0c1..7e98556  main -> main
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ python3 myscript.py | tee output.txt
+python3: can't open file '/workspaces/Wireshark_VM/myscript.py': [Errno 2] No such file or directory
 @williamudo ➜ /workspaces/Wireshark_VM (main) $ touch terminal_log.txt
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ git add .
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ git commit -m "New Terminal Log Created"
+[main 1641a5d] New Terminal Log Created
+ 2 files changed, 164 insertions(+)
+ create mode 100644 output.txt
+ create mode 100644 terminal_log.txt
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ git push
+To https://github.com/williamudo/Wireshark_VM
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'https://github.com/williamudo/Wireshark_VM'
+hint: Updates were rejected because the remote contains work that you do not
+hint: have locally. This is usually caused by another repository pushing to
+hint: the same ref. If you want to integrate the remote changes, use
+hint: 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ git add .
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ script terminal_log.txt
+Script started, output log file is 'terminal_log.txt'.
+@williamudo ➜ /workspaces/Wireshark_VM (main) $ 
